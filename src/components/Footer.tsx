@@ -12,7 +12,7 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-24 mb-24">
           <div className={cn('col-span-1', isArabic && 'text-right')}>
-            <Link to="/" className={cn('flex items-center gap-4 mb-10 group', isArabic && 'justify-end')}>
+            <Link to="/" dir="ltr" className={cn('flex items-center gap-4 mb-10 group', isArabic && 'justify-end')}>
               <Logo className="w-24 h-12 text-paper" />
             </Link>
             <p className="text-paper/40 text-sm leading-relaxed max-w-xs font-light italic font-serif">

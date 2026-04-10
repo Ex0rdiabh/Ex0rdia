@@ -2,8 +2,8 @@ import React from 'react';
 
 export default function Logo({ className = "w-16 h-16" }: { className?: string }) {
   return (
-    <div className={className}>
-      <svg viewBox="0 0 240 120" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+    <div className={className} dir="ltr">
+      <svg viewBox="0 0 240 120" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full overflow-visible" style={{ direction: 'ltr' }} preserveAspectRatio="xMinYMid meet">
         {/* "Ex" in bold sans-serif */}
         <text 
           x="10" 
