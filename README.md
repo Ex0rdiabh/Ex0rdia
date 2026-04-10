@@ -66,3 +66,4 @@ GitHub will build and deploy the site automatically.
 - The site is intentionally kept static-first to reduce bugs and hosting cost.
 - Automatic form delivery is not required for launch on GitHub Pages.
 - WhatsApp and email are the primary production-safe submission paths on the free host.
+
