@@ -24,7 +24,7 @@ export default function VisionMission() {
             <h2 className="text-4xl md:text-5xl font-serif text-ink tracking-tight">
               Our Vision
             </h2>
-            <p className="text-2xl md:text-[2rem] text-ink/72 leading-[1.8] font-serif italic max-w-[22ch]">
+           <p className="text-xl md:text-[1.8rem] text-ink/70 leading-[1.85] font-serif max-w-[23ch]">
               To become Bahrain’s leading creative marketplace, empowering a new generation of talent while transforming how businesses access creative services.
             </p>
           </div>
@@ -33,7 +33,7 @@ export default function VisionMission() {
             <h2 className="text-4xl md:text-5xl font-serif text-ink tracking-tight">
               Our Mission
             </h2>
-            <p className="text-xl md:text-[1.9rem] text-ink/72 leading-[1.8] font-serif italic max-w-[22ch]">
+            <p className="text-xl md:text-[1.8rem] text-ink/70 leading-[1.85] font-serif max-w-[23ch]">
               To bridge the gap between businesses and local creatives by providing a trusted, efficient platform for high-quality, on-demand creative services — while supporting and elevating Bahraini youth in the creative industry.
             </p>
           </div>
