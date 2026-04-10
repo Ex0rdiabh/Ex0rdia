@@ -58,7 +58,7 @@ export default function LandingPage() {
                 <img 
                   src={heroImage} 
                   alt="Exordia Team" 
-                  className="absolute inset-0 w-full h-full object-cover object-center scale-110 group-hover:scale-100 transition-transform duration-1000"
+                  className="absolute inset-0 w-full h-full object-cover object-[70%_center] scale-[1.45] group-hover:scale-[1.35] transition-transform duration-1000"
                   referrerPolicy="no-referrer"
                 />
                 <div className="absolute inset-0 bg-ink/20"></div>
