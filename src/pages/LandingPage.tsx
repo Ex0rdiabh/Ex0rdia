@@ -10,28 +10,14 @@ import {
   Layers3,
   CheckCircle2,
 } from 'lucide-react';
-import {
-  motion,
-  useReducedMotion,
-  useScroll,
-  useSpring,
-  useMotionValueEvent,
-  AnimatePresence,
-} from 'motion/react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { motion, useReducedMotion, AnimatePresence } from 'motion/react';
+import { useEffect, useMemo, useState } from 'react';
 import { cn } from '../lib/utils';
 import { useLanguage } from '../i18n/LanguageContext';
 import heroImage from '../assets/hero-new.jpg';
 
 const MotionLink = motion(Link);
-
-const CHAPTER_RANGES = {
-  hero: [0, 0.12],
-  why: [0.12, 0.3],
-  services: [0.3, 0.66],
-  methodology: [0.66, 0.84],
-  cta: [0.84, 1],
-} as const;
+const TOTAL_STEPS = 9;
 
 type ServiceTone = {
   title: string;
@@ -104,18 +90,11 @@ const SERVICE_ITEMS: Record<'en' | 'ar', ServiceTone[]> = {
   ],
 };
 
-function chapterProgress(progress: number, start: number, end: number) {
-  if (progress <= start) return 0;
-  if (progress >= end) return 1;
-  return (progress - start) / (end - start);
-}
-
 export default function LandingPage() {
   const { copy, isArabic, language } = useLanguage();
   const reduceMotion = useReducedMotion();
-  const sectionRef = useRef<HTMLElement | null>(null);
-  const [progress, setProgress] = useState(0);
   const [isDesktop, setIsDesktop] = useState(false);
+  const [step, setStep] = useState(0);
 
   useEffect(() => {
     const media = window.matchMedia('(min-width: 1024px)');
@@ -125,32 +104,42 @@ export default function LandingPage() {
     return () => media.removeEventListener('change', onChange);
   }, []);
 
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ['start start', 'end end'],
-  });
-
-  const easedProgress = useSpring(scrollYProgress, {
-    stiffness: 170,
-    damping: 28,
-    mass: 0.22,
-  });
-
-  useMotionValueEvent(easedProgress, 'change', (latest) => {
-    setProgress(Math.min(1, Math.max(0, latest)));
-  });
-
   const services = SERVICE_ITEMS[language];
-  const servicesLocalProgress = chapterProgress(progress, CHAPTER_RANGES.services[0], CHAPTER_RANGES.services[1]);
-  const revealedCount = Math.min(services.length, Math.floor(servicesLocalProgress * (services.length + 0.25)) + 1);
-  const showServicesGrid = servicesLocalProgress > 0.82;
+  const serviceFocusIndex = Math.min(services.length - 1, Math.max(0, step - 2));
+  const showServiceFocus = step >= 2 && step <= 5;
+  const showServiceGrid = step === 6;
+
+  const activeChapter =
+    step <= 0
+      ? 0
+      : step === 1
+        ? 1
+        : step <= 6
+          ? 2
+          : step === 7
+            ? 3
+            : 4;
+
+  const chapterNav = [
+    { key: 'hero', label: isArabic ? 'المقدمة' : 'Intro', at: 0 },
+    { key: 'why', label: isArabic ? 'لماذا' : 'Why', at: 1 },
+    { key: 'services', label: isArabic ? 'الخدمات' : 'Services', at: 2 },
+    { key: 'methodology', label: isArabic ? 'المنهجية' : 'Method', at: 7 },
+    { key: 'cta', label: isArabic ? 'الحجز' : 'Book', at: 8 },
+  ] as const;
+
+  const titleBase = 'text-[clamp(2.4rem,7vw,5.5rem)] font-serif leading-[0.9] tracking-[-0.03em]';
+
+  const goToStep = (next: number) => setStep(Math.max(0, Math.min(TOTAL_STEPS - 1, next)));
+  const nextStep = () => goToStep(step + 1);
+  const prevStep = () => goToStep(step - 1);
 
   const chapters = useMemo(
     () => [
       {
         key: 'hero',
         title: 'Exordia',
-        subtitle: isArabic ? 'fresh minds… bigger impact' : 'fresh minds… bigger impact',
+        subtitle: 'fresh minds… bigger impact',
         description: copy.landing.description,
         icon: Sparkles,
       },
@@ -169,8 +158,8 @@ export default function LandingPage() {
         title: copy.landing.explore,
         subtitle: isArabic ? 'خدمات مصممة للتأثير' : 'Services designed for impact',
         description: isArabic
-          ? 'تتقدّم كل خدمة بشكل مستقل، ثم تجتمع في مشهد موحّد يعكس القوة الكاملة لـ Exordia.'
-          : 'Each service takes the stage, then resolves into one complete offering inside a single premium frame.',
+          ? 'اضغط داخل الإطار للتنقّل بين الخدمات واحدة تلو الأخرى.'
+          : 'Click inside the frame to move through each service one-by-one.',
         icon: Layers3,
       },
       {
@@ -185,44 +174,13 @@ export default function LandingPage() {
       {
         key: 'cta',
         title: 'Exordia',
-        subtitle: isArabic ? 'fresh minds… bigger impact' : 'fresh minds… bigger impact',
+        subtitle: 'fresh minds… bigger impact',
         description: copy.landing.finalDescription,
         icon: Sparkles,
       },
     ],
     [copy.landing.description, copy.landing.explore, copy.landing.finalDescription, copy.landing.methodology, isArabic],
   );
-
-  const activeChapter =
-    progress < CHAPTER_RANGES.why[0]
-      ? 0
-      : progress < CHAPTER_RANGES.services[0]
-        ? 1
-        : progress < CHAPTER_RANGES.methodology[0]
-          ? 2
-          : progress < CHAPTER_RANGES.cta[0]
-            ? 3
-            : 4;
-
-  const titleBase = 'text-[clamp(3rem,10vw,8rem)] font-serif leading-[0.86] tracking-[-0.03em]';
-  const chapterNav = [
-    { key: 'hero', label: isArabic ? 'المقدمة' : 'Intro', at: CHAPTER_RANGES.hero[0] },
-    { key: 'why', label: isArabic ? 'لماذا' : 'Why', at: CHAPTER_RANGES.why[0] },
-    { key: 'services', label: isArabic ? 'الخدمات' : 'Services', at: CHAPTER_RANGES.services[0] },
-    { key: 'methodology', label: isArabic ? 'المنهجية' : 'Method', at: CHAPTER_RANGES.methodology[0] },
-    { key: 'cta', label: isArabic ? 'الحجز' : 'Book', at: CHAPTER_RANGES.cta[0] },
-  ] as const;
-
-  const jumpToChapter = (chapterStart: number) => {
-    if (!sectionRef.current) return;
-    const rect = sectionRef.current.getBoundingClientRect();
-    const sectionTop = window.scrollY + rect.top;
-    const scrollDistance = Math.max(0, sectionRef.current.offsetHeight - window.innerHeight);
-    window.scrollTo({
-      top: sectionTop + scrollDistance * chapterStart,
-      behavior: reduceMotion ? 'auto' : 'smooth',
-    });
-  };
 
   if (!isDesktop) {
     return (
@@ -279,23 +237,31 @@ export default function LandingPage() {
   }
 
   return (
-    <section ref={sectionRef} className="relative h-[430vh] bg-paper text-ink">
-      <div className="sticky top-0 flex h-screen items-center justify-center overflow-hidden px-4 py-10 sm:px-8">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(212,175,55,0.16),_transparent_38%),linear-gradient(180deg,_rgba(255,255,255,0.96)_0%,_rgba(245,242,237,0.98)_84%)]" />
-
-        <div className="relative z-10 flex h-[78vh] w-full max-w-6xl flex-col overflow-hidden rounded-[2.7rem] border border-ink/10 bg-white/95 p-8 shadow-[0_30px_90px_rgba(10,10,10,0.12)] lg:p-12">
-          <div className="mb-8 flex items-center justify-between text-[10px] uppercase tracking-[0.32em] text-ink/58">
+    <section className="relative min-h-screen bg-paper px-4 py-10 text-ink sm:px-8" onClick={nextStep}>
+      <div className="mx-auto w-full max-w-6xl">
+        <div className="relative z-10 flex h-[82vh] w-full flex-col overflow-hidden rounded-[2.7rem] border border-ink/10 bg-white/95 p-8 shadow-[0_30px_90px_rgba(10,10,10,0.12)] lg:p-12">
+          <div className="mb-4 flex items-center justify-between text-[10px] uppercase tracking-[0.32em] text-ink/58">
             <span>Exordia</span>
-            <span>{Math.round(progress * 100)}%</span>
+            <span>{Math.round((step / (TOTAL_STEPS - 1)) * 100)}%</span>
           </div>
-          <div className={cn('mb-6 flex flex-wrap items-center gap-2', isArabic && 'justify-end')}>
+
+          <motion.div
+            initial={reduceMotion ? false : { opacity: 0, scale: 0.95 }}
+            animate={{ opacity: step <= 1 ? 1 : 0, scale: step <= 1 ? 1 : 0.9 }}
+            transition={{ duration: 0.35 }}
+            className="pointer-events-none absolute right-10 top-14 z-20 h-28 w-40 overflow-hidden rounded-2xl border border-ink/10 bg-paper shadow-[0_12px_25px_rgba(0,0,0,0.08)]"
+          >
+            <img src={heroImage} alt="Exordia hero boys" className="h-full w-full scale-[1.28] object-cover object-[30%_22%]" />
+          </motion.div>
+
+          <div className={cn('mb-4 flex flex-wrap items-center gap-2', isArabic && 'justify-end')} onClick={(e) => e.stopPropagation()}>
             {chapterNav.map((chapter, index) => {
               const isActive = activeChapter === index;
               return (
                 <button
                   key={chapter.key}
                   type="button"
-                  onClick={() => jumpToChapter(chapter.at)}
+                  onClick={() => goToStep(chapter.at)}
                   className={cn(
                     'rounded-full border px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.2em] transition-colors',
                     isActive ? 'border-gold bg-gold/12 text-ink' : 'border-ink/15 bg-white text-ink/65 hover:border-gold/40 hover:text-ink',
@@ -310,74 +276,52 @@ export default function LandingPage() {
           <div className="relative flex-1 overflow-hidden">
             <AnimatePresence mode="wait">
               <motion.article
-                key={chapters[activeChapter].key}
-                initial={reduceMotion ? false : { opacity: 0, y: 28, scale: 0.985 }}
+                key={`step-${step}`}
+                initial={reduceMotion ? false : { opacity: 0, y: 22, scale: 0.97 }}
                 animate={reduceMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
-                exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -24, scale: 0.985 }}
-                transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+                exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -16, scale: 0.98 }}
+                transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
                 className="absolute inset-0"
               >
                 {activeChapter !== 2 && (
                   <div className={cn('flex h-full flex-col justify-between', isArabic && 'text-right')}>
                     <div>
-                      <p className={cn('mb-4 text-[10px] font-bold text-gold', isArabic ? 'tracking-[0.14em]' : 'tracking-[0.32em] uppercase')}>
-                        {chapters[activeChapter].key === 'why'
+                      <p className={cn('mb-3 text-[10px] font-bold text-gold', isArabic ? 'tracking-[0.14em]' : 'tracking-[0.28em] uppercase')}>
+                        {activeChapter === 1
                           ? '02 / WHY EXORDIA'
-                          : chapters[activeChapter].key === 'methodology'
+                          : activeChapter === 3
                             ? '04 / THE METHODOLOGY'
-                            : chapters[activeChapter].key === 'cta'
+                            : activeChapter === 4
                               ? '05 / START BOOKING'
                               : '01 / EXORDIA'}
                       </p>
                       <h1 className={titleBase}>{chapters[activeChapter].title}</h1>
-                      <p className="mt-4 text-3xl font-serif italic text-gold">{chapters[activeChapter].subtitle}</p>
-                      <p className="mt-6 max-w-3xl text-lg leading-relaxed text-ink/64">{chapters[activeChapter].description}</p>
+                      <p className="mt-3 text-2xl font-serif italic text-gold">{chapters[activeChapter].subtitle}</p>
+                      <p className="mt-4 max-w-2xl text-base leading-relaxed text-ink/64">{chapters[activeChapter].description}</p>
                     </div>
 
-                    {activeChapter === 0 && (
-                      <div className="mt-8 overflow-hidden rounded-[1.8rem] border border-ink/10 bg-paper shadow-[0_22px_50px_rgba(10,10,10,0.08)]">
-                        <div className="grid grid-cols-[1.1fr_0.9fr] items-stretch">
-                          <img
-                            src={heroImage}
-                            alt="Exordia creative hero"
-                            className="h-[250px] w-full scale-[1.18] object-cover object-[28%_24%]"
-                          />
-                          <div className="flex flex-col justify-center p-6">
-                            <p className="text-[10px] uppercase tracking-[0.28em] text-gold">{copy.landing.eyebrow}</p>
-                            <p className="mt-3 text-xl font-serif">{copy.landing.primaryCta}</p>
-                            <p className="mt-2 text-sm leading-relaxed text-ink/62">{copy.landing.description}</p>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
                     {activeChapter === 3 && (
-                      <div className="grid grid-cols-4 gap-4 pt-10">
+                      <div className="grid grid-cols-4 gap-3 pt-6">
                         {copy.landing.process.map((item) => (
                           <div key={item.step} className="rounded-2xl border border-ink/10 bg-paper p-4">
                             <p className="text-[10px] uppercase tracking-[0.24em] text-gold">{item.step}</p>
-                            <h3 className="mt-2 text-xl font-serif">{item.title}</h3>
-                            <p className="mt-2 text-sm text-ink/66">{item.desc}</p>
+                            <h3 className="mt-2 text-lg font-serif">{item.title}</h3>
+                            <p className="mt-2 text-xs text-ink/66">{item.desc}</p>
                           </div>
                         ))}
                       </div>
                     )}
 
                     {activeChapter === 4 && (
-                      <div className={cn('pt-10', isArabic && 'flex justify-end')}>
+                      <div className={cn('pt-8', isArabic && 'flex justify-end')} onClick={(e) => e.stopPropagation()}>
                         <MotionLink
                           to="/book"
-                          className="group inline-flex items-center justify-center gap-3 rounded-full bg-gold px-12 py-5 text-[11px] font-bold uppercase tracking-[0.28em] text-ink shadow-[0_24px_80px_rgba(212,175,55,0.24)]"
+                          className="group inline-flex items-center justify-center gap-3 rounded-full bg-gold px-10 py-4 text-[11px] font-bold uppercase tracking-[0.28em] text-ink shadow-[0_24px_80px_rgba(212,175,55,0.24)]"
                           whileHover={reduceMotion ? undefined : { y: -3, scale: 1.01 }}
                           whileTap={reduceMotion ? undefined : { scale: 0.985 }}
                         >
                           {copy.nav.booking}
-                          <ArrowRight
-                            className={cn(
-                              'h-4 w-4 transition-transform',
-                              isArabic ? 'rotate-180 group-hover:-translate-x-1.5' : 'group-hover:translate-x-1.5',
-                            )}
-                          />
+                          <ArrowRight className={cn('h-4 w-4 transition-transform', isArabic ? 'rotate-180 group-hover:-translate-x-1.5' : 'group-hover:translate-x-1.5')} />
                         </MotionLink>
                       </div>
                     )}
@@ -386,71 +330,68 @@ export default function LandingPage() {
 
                 {activeChapter === 2 && (
                   <div className={cn('flex h-full flex-col', isArabic && 'text-right')}>
-                    <p className={cn('mb-4 text-[10px] font-bold text-gold', isArabic ? 'tracking-[0.14em]' : 'tracking-[0.32em] uppercase')}>
+                    <p className={cn('mb-3 text-[10px] font-bold text-gold', isArabic ? 'tracking-[0.14em]' : 'tracking-[0.3em] uppercase')}>
                       03 / SERVICES
                     </p>
-                    <h2 className="text-5xl font-serif">{chapters[2].subtitle}</h2>
-                    <p className="mt-3 max-w-3xl text-ink/68">{chapters[2].description}</p>
+                    <h2 className="text-4xl font-serif">{chapters[2].subtitle}</h2>
+                    <p className="mt-2 max-w-2xl text-sm text-ink/66">{chapters[2].description}</p>
 
-                    <div className="relative mt-8 flex-1 overflow-hidden rounded-[1.9rem] border border-ink/10 bg-paper p-6">
+                    <div className="relative mt-6 flex-1 overflow-hidden rounded-[1.9rem] border border-ink/10 bg-paper p-5">
                       <AnimatePresence mode="wait">
-                        {!showServicesGrid ? (
+                        {showServiceFocus && (
                           <motion.div
-                            key={services[Math.max(0, revealedCount - 1)].title}
-                            initial={reduceMotion ? false : { opacity: 0, y: 24, scale: 0.98 }}
-                            animate={reduceMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
-                            exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -20, scale: 0.98 }}
+                            key={services[serviceFocusIndex].title}
+                            initial={reduceMotion ? false : { opacity: 0, scale: 0.86 }}
+                            animate={reduceMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }}
+                            exit={reduceMotion ? { opacity: 0 } : { opacity: 0, scale: 1.06 }}
                             transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
                             className="h-full"
                           >
                             {(() => {
-                              const featured = services[Math.max(0, revealedCount - 1)];
+                              const featured = services[serviceFocusIndex];
                               const Icon = featured.icon;
                               return (
-                                <div
-                                  className={cn(
-                                    'relative flex h-full flex-col justify-end overflow-hidden rounded-[1.5rem] border p-8 shadow-[0_24px_80px_rgba(0,0,0,0.32)]',
-                                    featured.border,
-                                  )}
-                                >
+                                <div className={cn('relative flex h-full flex-col justify-end overflow-hidden rounded-[1.5rem] border p-8 shadow-[0_20px_60px_rgba(0,0,0,0.16)]', featured.border)}>
                                   <div className={cn('absolute inset-x-0 top-0 h-44 bg-gradient-to-b', featured.accent)} />
                                   <div className="relative z-10">
-                                    <div className="mb-8 inline-flex h-14 w-14 items-center justify-center rounded-2xl border border-paper/14 bg-paper/8 text-gold">
-                                      <Icon className="h-6 w-6" />
+                                    <div className="mb-6 inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-ink/10 bg-paper/70 text-gold">
+                                      <Icon className="h-5 w-5" />
                                     </div>
-                                    <h3 className="text-5xl font-serif">{featured.title}</h3>
-                                    <p className="mt-4 max-w-2xl text-lg text-ink/66">{featured.description}</p>
+                                    <h3 className="text-4xl font-serif">{featured.title}</h3>
+                                    <p className="mt-3 max-w-xl text-base text-ink/66">{featured.description}</p>
                                   </div>
                                 </div>
                               );
                             })()}
                           </motion.div>
-                        ) : (
+                        )}
+
+                        {showServiceGrid && (
                           <motion.div
                             key="services-grid"
                             initial={reduceMotion ? false : { opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -10 }}
-                            transition={{ duration: 0.46 }}
-                            className="grid h-full grid-cols-2 gap-4"
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.4 }}
+                            className="grid h-full grid-cols-2 gap-3"
                           >
                             {services.map((service, index) => {
                               const Icon = service.icon;
                               return (
                                 <motion.div
                                   key={service.title}
-                                  initial={reduceMotion ? false : { opacity: 0, y: 16 }}
+                                  initial={reduceMotion ? false : { opacity: 0, y: 14 }}
                                   animate={{ opacity: 1, y: 0 }}
-                                  transition={{ delay: index * 0.06, duration: 0.35 }}
-                                  className={cn('relative overflow-hidden rounded-2xl border p-5', service.border)}
+                                  transition={{ delay: index * 0.05, duration: 0.3 }}
+                                  className={cn('relative overflow-hidden rounded-2xl border p-4', service.border)}
                                 >
-                                  <div className={cn('absolute inset-x-0 top-0 h-20 bg-gradient-to-b', service.accent)} />
+                                  <div className={cn('absolute inset-x-0 top-0 h-16 bg-gradient-to-b', service.accent)} />
                                   <div className="relative z-10">
-                                    <div className="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-xl border border-paper/12 bg-paper/8 text-gold">
-                                      <Icon className="h-5 w-5" />
+                                    <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl border border-ink/10 bg-paper/70 text-gold">
+                                      <Icon className="h-4 w-4" />
                                     </div>
-                                    <h3 className="text-2xl font-serif leading-tight">{service.title}</h3>
-                                    <p className="mt-2 text-sm text-ink/65">{service.description}</p>
+                                    <h3 className="text-xl font-serif leading-tight">{service.title}</h3>
+                                    <p className="mt-2 text-xs text-ink/65">{service.description}</p>
                                   </div>
                                 </motion.div>
                               );
@@ -465,8 +406,28 @@ export default function LandingPage() {
             </AnimatePresence>
           </div>
 
-          <div className="mt-8 h-1 rounded-full bg-ink/10">
-            <motion.div className="h-full rounded-full bg-gold" style={{ width: `${Math.round(progress * 100)}%` }} />
+          <div className="mt-6 flex items-center justify-between" onClick={(e) => e.stopPropagation()}>
+            <button
+              type="button"
+              onClick={prevStep}
+              disabled={step === 0}
+              className="rounded-full border border-ink/15 px-4 py-2 text-[11px] uppercase tracking-[0.18em] text-ink/65 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              {isArabic ? 'السابق' : 'Back'}
+            </button>
+            <p className="text-[10px] uppercase tracking-[0.26em] text-ink/45">{isArabic ? 'اضغط على الإطار للمتابعة' : 'Click frame to continue'}</p>
+            <button
+              type="button"
+              onClick={nextStep}
+              disabled={step === TOTAL_STEPS - 1}
+              className="rounded-full border border-ink/15 px-4 py-2 text-[11px] uppercase tracking-[0.18em] text-ink/65 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              {isArabic ? 'التالي' : 'Next'}
+            </button>
+          </div>
+
+          <div className="mt-4 h-1 rounded-full bg-ink/10">
+            <motion.div className="h-full rounded-full bg-gold" style={{ width: `${Math.round((step / (TOTAL_STEPS - 1)) * 100)}%` }} />
           </div>
         </div>
       </div>
