@@ -205,6 +205,24 @@ export default function LandingPage() {
             : 4;
 
   const titleBase = 'text-[clamp(3rem,10vw,8rem)] font-serif leading-[0.86] tracking-[-0.03em]';
+  const chapterNav = [
+    { key: 'hero', label: isArabic ? 'المقدمة' : 'Intro', at: CHAPTER_RANGES.hero[0] },
+    { key: 'why', label: isArabic ? 'لماذا' : 'Why', at: CHAPTER_RANGES.why[0] },
+    { key: 'services', label: isArabic ? 'الخدمات' : 'Services', at: CHAPTER_RANGES.services[0] },
+    { key: 'methodology', label: isArabic ? 'المنهجية' : 'Method', at: CHAPTER_RANGES.methodology[0] },
+    { key: 'cta', label: isArabic ? 'الحجز' : 'Book', at: CHAPTER_RANGES.cta[0] },
+  ] as const;
+
+  const jumpToChapter = (chapterStart: number) => {
+    if (!sectionRef.current) return;
+    const rect = sectionRef.current.getBoundingClientRect();
+    const sectionTop = window.scrollY + rect.top;
+    const scrollDistance = Math.max(0, sectionRef.current.offsetHeight - window.innerHeight);
+    window.scrollTo({
+      top: sectionTop + scrollDistance * chapterStart,
+      behavior: reduceMotion ? 'auto' : 'smooth',
+    });
+  };
 
   if (!isDesktop) {
     return (
@@ -270,6 +288,24 @@ export default function LandingPage() {
             <span>Exordia</span>
             <span>{Math.round(progress * 100)}%</span>
           </div>
+          <div className={cn('mb-6 flex flex-wrap items-center gap-2', isArabic && 'justify-end')}>
+            {chapterNav.map((chapter, index) => {
+              const isActive = activeChapter === index;
+              return (
+                <button
+                  key={chapter.key}
+                  type="button"
+                  onClick={() => jumpToChapter(chapter.at)}
+                  className={cn(
+                    'rounded-full border px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.2em] transition-colors',
+                    isActive ? 'border-gold bg-gold/12 text-ink' : 'border-ink/15 bg-white text-ink/65 hover:border-gold/40 hover:text-ink',
+                  )}
+                >
+                  {chapter.label}
+                </button>
+              );
+            })}
+          </div>
 
           <div className="relative flex-1 overflow-hidden">
             <AnimatePresence mode="wait">
@@ -301,7 +337,11 @@ export default function LandingPage() {
                     {activeChapter === 0 && (
                       <div className="mt-8 overflow-hidden rounded-[1.8rem] border border-ink/10 bg-paper shadow-[0_22px_50px_rgba(10,10,10,0.08)]">
                         <div className="grid grid-cols-[1.1fr_0.9fr] items-stretch">
-                          <img src={heroImage} alt="Exordia creative hero" className="h-[250px] w-full object-cover object-center" />
+                          <img
+                            src={heroImage}
+                            alt="Exordia creative hero"
+                            className="h-[250px] w-full scale-[1.18] object-cover object-[28%_24%]"
+                          />
                           <div className="flex flex-col justify-center p-6">
                             <p className="text-[10px] uppercase tracking-[0.28em] text-gold">{copy.landing.eyebrow}</p>
                             <p className="mt-3 text-xl font-serif">{copy.landing.primaryCta}</p>
