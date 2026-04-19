@@ -251,7 +251,7 @@ export default function LandingPage() {
             transition={{ duration: 0.35 }}
             className="pointer-events-none absolute right-20 top-14 z-20 h-36 w-56 overflow-hidden rounded-2xl border border-ink/10 bg-paper shadow-[0_12px_25px_rgba(0,0,0,0.08)]"
           >
-            <img src={heroImage} alt="Exordia hero boys" className="h-full w-full scale-[1.45] object-cover object-[18%_22%]" />
+            <img src={heroImage} alt="Exordia hero boys" className="h-full w-full scale-[1.45] object-cover object-[10%_22%]" />
           </motion.div>
 
           <div className={cn('mb-4 flex flex-wrap items-center gap-2', isArabic && 'justify-end')} onClick={(e) => e.stopPropagation()}>
