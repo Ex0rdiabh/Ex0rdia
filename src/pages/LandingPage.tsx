@@ -394,7 +394,6 @@ export default function LandingPage() {
                                       <Icon className="h-4 w-4" />
                                     </div>
                                     <h3 className="text-xl font-serif leading-tight">{service.title}</h3>
-                                    <p className="mt-2 text-xs leading-relaxed text-ink/65">{service.description}</p>
                                   </div>
                                 </motion.div>
                               );
