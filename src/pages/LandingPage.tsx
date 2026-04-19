@@ -249,9 +249,9 @@ export default function LandingPage() {
             initial={reduceMotion ? false : { opacity: 0, scale: 0.95 }}
             animate={{ opacity: step <= 1 ? 1 : 0, scale: step <= 1 ? 1 : 0.9 }}
             transition={{ duration: 0.35 }}
-            className="pointer-events-none absolute right-20 top-14 z-20 h-36 w-56 overflow-hidden rounded-2xl border border-ink/10 bg-paper shadow-[0_12px_25px_rgba(0,0,0,0.08)]"
+            className="pointer-events-none absolute right-16 top-12 z-20 h-44 w-72 overflow-hidden rounded-2xl border border-ink/10 bg-paper shadow-[0_12px_25px_rgba(0,0,0,0.08)]"
           >
-            <img src={heroImage} alt="Exordia hero boys" className="h-full w-full scale-[1.45] object-cover object-[10%_22%]" />
+            <img src={heroImage} alt="Exordia hero boys" className="h-full w-full scale-[1.48] object-cover object-[10%_22%]" />
           </motion.div>
 
           <div className={cn('mb-4 flex flex-wrap items-center gap-2', isArabic && 'justify-end')} onClick={(e) => e.stopPropagation()}>
@@ -339,7 +339,7 @@ export default function LandingPage() {
                     <h2 className="text-4xl font-serif">{chapters[2].subtitle}</h2>
                     <p className="mt-2 max-w-2xl text-sm text-ink/66">{chapters[2].description}</p>
 
-                    <div className="relative mt-6 flex-1 overflow-hidden rounded-[1.9rem] border border-ink/10 bg-paper p-5">
+                    <div className="relative mt-6 flex-1 overflow-hidden rounded-[1.9rem] border border-ink/10 bg-paper p-6">
                       <AnimatePresence mode="wait">
                         {showServiceFocus && (
                           <motion.div
@@ -386,15 +386,15 @@ export default function LandingPage() {
                                   initial={reduceMotion ? false : { opacity: 0, y: 14 }}
                                   animate={{ opacity: 1, y: 0 }}
                                   transition={{ delay: index * 0.05, duration: 0.3 }}
-                                  className={cn('relative overflow-hidden rounded-2xl border p-4', service.border)}
+                                  className={cn('relative overflow-hidden rounded-2xl border p-4 min-h-[180px]', service.border)}
                                 >
                                   <div className={cn('absolute inset-x-0 top-0 h-16 bg-gradient-to-b', service.accent)} />
-                                  <div className="relative z-10">
+                                  <div className="relative z-10 flex h-full flex-col">
                                     <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl border border-ink/10 bg-paper/70 text-gold">
                                       <Icon className="h-4 w-4" />
                                     </div>
                                     <h3 className="text-xl font-serif leading-tight">{service.title}</h3>
-                                    <p className="mt-2 text-xs text-ink/65">{service.description}</p>
+                                    <p className="mt-2 text-xs leading-relaxed text-ink/65">{service.description}</p>
                                   </div>
                                 </motion.div>
                               );
