@@ -21,15 +21,16 @@ import {
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { cn } from '../lib/utils';
 import { useLanguage } from '../i18n/LanguageContext';
+import heroImage from '../assets/hero-new.jpg';
 
 const MotionLink = motion(Link);
 
 const CHAPTER_RANGES = {
-  hero: [0, 0.16],
-  why: [0.16, 0.34],
-  services: [0.34, 0.7],
-  methodology: [0.7, 0.86],
-  cta: [0.86, 1],
+  hero: [0, 0.12],
+  why: [0.12, 0.3],
+  services: [0.3, 0.66],
+  methodology: [0.66, 0.84],
+  cta: [0.84, 1],
 } as const;
 
 type ServiceTone = {
@@ -130,9 +131,9 @@ export default function LandingPage() {
   });
 
   const easedProgress = useSpring(scrollYProgress, {
-    stiffness: 120,
-    damping: 24,
-    mass: 0.3,
+    stiffness: 170,
+    damping: 28,
+    mass: 0.22,
   });
 
   useMotionValueEvent(easedProgress, 'change', (latest) => {
@@ -207,34 +208,34 @@ export default function LandingPage() {
 
   if (!isDesktop) {
     return (
-      <div className="bg-ink text-paper px-4 py-20 sm:px-6">
+      <div className="bg-paper text-ink px-4 py-20 sm:px-6">
         <div className="mx-auto max-w-3xl space-y-6">
           {chapters.map((chapter, index) => {
             const Icon = chapter.icon;
             return (
               <section
                 key={chapter.key}
-                className="rounded-[2rem] border border-paper/10 bg-white/[0.03] p-6 shadow-[0_20px_60px_rgba(0,0,0,0.22)] backdrop-blur-xl"
+                className="rounded-[2rem] border border-ink/10 bg-white p-6 shadow-[0_18px_45px_rgba(10,10,10,0.08)]"
               >
                 <div className={cn('mb-5 flex items-center gap-3 text-gold', isArabic && 'flex-row-reverse')}>
                   <Icon className="h-5 w-5" />
                   <span className="text-[10px] uppercase tracking-[0.32em]">0{index + 1}</span>
                 </div>
                 <h2 className={cn('text-4xl font-serif leading-tight', isArabic && 'text-right')}>{chapter.title}</h2>
-                <p className={cn('mt-3 text-base text-paper/75', isArabic && 'text-right')}>{chapter.subtitle}</p>
-                <p className={cn('mt-4 text-sm leading-relaxed text-paper/65', isArabic && 'text-right')}>{chapter.description}</p>
+                <p className={cn('mt-3 text-base text-ink/75', isArabic && 'text-right')}>{chapter.subtitle}</p>
+                <p className={cn('mt-4 text-sm leading-relaxed text-ink/62', isArabic && 'text-right')}>{chapter.description}</p>
 
                 {chapter.key === 'services' && (
                   <div className="mt-6 grid gap-3">
                     {services.map((service) => {
                       const ServiceIcon = service.icon;
                       return (
-                        <div key={service.title} className={cn('rounded-2xl border p-4', service.border)}>
-                          <div className={cn('mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-paper/8 text-gold')}>
+                        <div key={service.title} className={cn('rounded-2xl border bg-paper p-4', service.border)}>
+                          <div className={cn('mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-ink/[0.04] text-gold')}>
                             <ServiceIcon className="h-5 w-5" />
                           </div>
                           <h3 className="text-lg font-serif">{service.title}</h3>
-                          <p className="mt-2 text-sm text-paper/70">{service.description}</p>
+                          <p className="mt-2 text-sm text-ink/70">{service.description}</p>
                         </div>
                       );
                     })}
@@ -260,12 +261,12 @@ export default function LandingPage() {
   }
 
   return (
-    <section ref={sectionRef} className="relative h-[560vh] bg-ink text-paper">
+    <section ref={sectionRef} className="relative h-[430vh] bg-paper text-ink">
       <div className="sticky top-0 flex h-screen items-center justify-center overflow-hidden px-4 py-10 sm:px-8">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(212,175,55,0.18),_transparent_38%),linear-gradient(180deg,_rgba(245,242,237,0.06)_0%,_rgba(10,10,10,0.96)_78%)]" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(212,175,55,0.16),_transparent_38%),linear-gradient(180deg,_rgba(255,255,255,0.96)_0%,_rgba(245,242,237,0.98)_84%)]" />
 
-        <div className="relative z-10 flex h-[78vh] w-full max-w-6xl flex-col overflow-hidden rounded-[2.7rem] border border-paper/12 bg-white/[0.04] p-8 shadow-[0_44px_120px_rgba(0,0,0,0.5)] backdrop-blur-xl lg:p-12">
-          <div className="mb-8 flex items-center justify-between text-[10px] uppercase tracking-[0.32em] text-paper/60">
+        <div className="relative z-10 flex h-[78vh] w-full max-w-6xl flex-col overflow-hidden rounded-[2.7rem] border border-ink/10 bg-white/95 p-8 shadow-[0_30px_90px_rgba(10,10,10,0.12)] lg:p-12">
+          <div className="mb-8 flex items-center justify-between text-[10px] uppercase tracking-[0.32em] text-ink/58">
             <span>Exordia</span>
             <span>{Math.round(progress * 100)}%</span>
           </div>
@@ -294,16 +295,29 @@ export default function LandingPage() {
                       </p>
                       <h1 className={titleBase}>{chapters[activeChapter].title}</h1>
                       <p className="mt-4 text-3xl font-serif italic text-gold">{chapters[activeChapter].subtitle}</p>
-                      <p className="mt-6 max-w-3xl text-lg leading-relaxed text-paper/70">{chapters[activeChapter].description}</p>
+                      <p className="mt-6 max-w-3xl text-lg leading-relaxed text-ink/64">{chapters[activeChapter].description}</p>
                     </div>
+
+                    {activeChapter === 0 && (
+                      <div className="mt-8 overflow-hidden rounded-[1.8rem] border border-ink/10 bg-paper shadow-[0_22px_50px_rgba(10,10,10,0.08)]">
+                        <div className="grid grid-cols-[1.1fr_0.9fr] items-stretch">
+                          <img src={heroImage} alt="Exordia creative hero" className="h-[250px] w-full object-cover object-center" />
+                          <div className="flex flex-col justify-center p-6">
+                            <p className="text-[10px] uppercase tracking-[0.28em] text-gold">{copy.landing.eyebrow}</p>
+                            <p className="mt-3 text-xl font-serif">{copy.landing.primaryCta}</p>
+                            <p className="mt-2 text-sm leading-relaxed text-ink/62">{copy.landing.description}</p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
 
                     {activeChapter === 3 && (
                       <div className="grid grid-cols-4 gap-4 pt-10">
                         {copy.landing.process.map((item) => (
-                          <div key={item.step} className="rounded-2xl border border-paper/10 bg-paper/[0.03] p-4">
+                          <div key={item.step} className="rounded-2xl border border-ink/10 bg-paper p-4">
                             <p className="text-[10px] uppercase tracking-[0.24em] text-gold">{item.step}</p>
                             <h3 className="mt-2 text-xl font-serif">{item.title}</h3>
-                            <p className="mt-2 text-sm text-paper/66">{item.desc}</p>
+                            <p className="mt-2 text-sm text-ink/66">{item.desc}</p>
                           </div>
                         ))}
                       </div>
@@ -336,9 +350,9 @@ export default function LandingPage() {
                       03 / SERVICES
                     </p>
                     <h2 className="text-5xl font-serif">{chapters[2].subtitle}</h2>
-                    <p className="mt-3 max-w-3xl text-paper/68">{chapters[2].description}</p>
+                    <p className="mt-3 max-w-3xl text-ink/68">{chapters[2].description}</p>
 
-                    <div className="relative mt-8 flex-1 overflow-hidden rounded-[1.9rem] border border-paper/10 bg-ink/55 p-6">
+                    <div className="relative mt-8 flex-1 overflow-hidden rounded-[1.9rem] border border-ink/10 bg-paper p-6">
                       <AnimatePresence mode="wait">
                         {!showServicesGrid ? (
                           <motion.div
@@ -365,7 +379,7 @@ export default function LandingPage() {
                                       <Icon className="h-6 w-6" />
                                     </div>
                                     <h3 className="text-5xl font-serif">{featured.title}</h3>
-                                    <p className="mt-4 max-w-2xl text-lg text-paper/66">{featured.description}</p>
+                                    <p className="mt-4 max-w-2xl text-lg text-ink/66">{featured.description}</p>
                                   </div>
                                 </div>
                               );
@@ -396,7 +410,7 @@ export default function LandingPage() {
                                       <Icon className="h-5 w-5" />
                                     </div>
                                     <h3 className="text-2xl font-serif leading-tight">{service.title}</h3>
-                                    <p className="mt-2 text-sm text-paper/65">{service.description}</p>
+                                    <p className="mt-2 text-sm text-ink/65">{service.description}</p>
                                   </div>
                                 </motion.div>
                               );
@@ -411,7 +425,7 @@ export default function LandingPage() {
             </AnimatePresence>
           </div>
 
-          <div className="mt-8 h-1 rounded-full bg-paper/10">
+          <div className="mt-8 h-1 rounded-full bg-ink/10">
             <motion.div className="h-full rounded-full bg-gold" style={{ width: `${Math.round(progress * 100)}%` }} />
           </div>
         </div>
