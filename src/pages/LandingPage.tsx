@@ -121,11 +121,11 @@ export default function LandingPage() {
             : 4;
 
   const chapterNav = [
-    { key: 'hero', label: isArabic ? 'المقدمة' : 'Intro', at: 0 },
-    { key: 'why', label: isArabic ? 'لماذا' : 'Why', at: 1 },
-    { key: 'services', label: isArabic ? 'الخدمات' : 'Services', at: 2 },
-    { key: 'methodology', label: isArabic ? 'المنهجية' : 'Method', at: 7 },
-    { key: 'cta', label: isArabic ? 'الحجز' : 'Book', at: 8 },
+    { key: 'hero', label: isArabic ? 'المقدمة' : 'Intro', at: 0, path: '/' },
+    { key: 'why', label: isArabic ? 'لماذا' : 'Why', at: 1, path: '/about' },
+    { key: 'services', label: isArabic ? 'الخدمات' : 'Services', at: 2, path: '/vision' },
+    { key: 'methodology', label: isArabic ? 'المنهجية' : 'Method', at: 7, path: '/dashboard' },
+    { key: 'cta', label: isArabic ? 'الحجز' : 'Book', at: 8, path: '/book' },
   ] as const;
 
   const titleBase = 'text-[clamp(2.4rem,7vw,5.5rem)] font-serif leading-[0.9] tracking-[-0.03em]';
@@ -237,7 +237,7 @@ export default function LandingPage() {
   }
 
   return (
-    <section className="relative min-h-screen bg-paper px-4 py-10 text-ink sm:px-8" onClick={nextStep}>
+    <section className="relative min-h-screen bg-paper px-4 pb-10 pt-28 text-ink sm:px-8" onClick={nextStep}>
       <div className="mx-auto w-full max-w-6xl">
         <div className="relative z-10 flex h-[82vh] w-full flex-col overflow-hidden rounded-[2.7rem] border border-ink/10 bg-white/95 p-8 shadow-[0_30px_90px_rgba(10,10,10,0.12)] lg:p-12">
           <div className="mb-4 flex items-center justify-between text-[10px] uppercase tracking-[0.32em] text-ink/58">
@@ -249,26 +249,29 @@ export default function LandingPage() {
             initial={reduceMotion ? false : { opacity: 0, scale: 0.95 }}
             animate={{ opacity: step <= 1 ? 1 : 0, scale: step <= 1 ? 1 : 0.9 }}
             transition={{ duration: 0.35 }}
-            className="pointer-events-none absolute right-10 top-14 z-20 h-28 w-40 overflow-hidden rounded-2xl border border-ink/10 bg-paper shadow-[0_12px_25px_rgba(0,0,0,0.08)]"
+            className="pointer-events-none absolute right-20 top-14 z-20 h-36 w-56 overflow-hidden rounded-2xl border border-ink/10 bg-paper shadow-[0_12px_25px_rgba(0,0,0,0.08)]"
           >
-            <img src={heroImage} alt="Exordia hero boys" className="h-full w-full scale-[1.28] object-cover object-[30%_22%]" />
+            <img src={heroImage} alt="Exordia hero boys" className="h-full w-full scale-[1.45] object-cover object-[18%_22%]" />
           </motion.div>
 
           <div className={cn('mb-4 flex flex-wrap items-center gap-2', isArabic && 'justify-end')} onClick={(e) => e.stopPropagation()}>
             {chapterNav.map((chapter, index) => {
               const isActive = activeChapter === index;
               return (
-                <button
+                <Link
                   key={chapter.key}
-                  type="button"
-                  onClick={() => goToStep(chapter.at)}
+                  to={chapter.path}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    goToStep(chapter.at);
+                  }}
                   className={cn(
                     'rounded-full border px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.2em] transition-colors',
                     isActive ? 'border-gold bg-gold/12 text-ink' : 'border-ink/15 bg-white text-ink/65 hover:border-gold/40 hover:text-ink',
                   )}
                 >
                   {chapter.label}
-                </button>
+                </Link>
               );
             })}
           </div>
