@@ -1,192 +1,441 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight, Shield, Clock, Star } from 'lucide-react';
-import { motion } from 'motion/react';
-import heroImage from '../assets/hero-new.jpg';
+import {
+  ArrowRight,
+  CalendarRange,
+  Camera,
+  Clapperboard,
+  PenTool,
+  Sparkles,
+  Target,
+  Layers3,
+  CheckCircle2,
+} from 'lucide-react';
+import { motion, useReducedMotion, AnimatePresence } from 'motion/react';
+import { useEffect, useMemo, useState } from 'react';
 import { cn } from '../lib/utils';
 import { useLanguage } from '../i18n/LanguageContext';
+import heroImage from '../assets/hero-new.jpg';
 
-const PHILOSOPHY_ICONS = [Shield, Clock, Star];
+const MotionLink = motion(Link);
+const TOTAL_STEPS = 9;
+
+type ServiceTone = {
+  title: string;
+  description: string;
+  icon: typeof Clapperboard;
+  accent: string;
+  border: string;
+};
+
+const SERVICE_ITEMS: Record<'en' | 'ar', ServiceTone[]> = {
+  en: [
+    {
+      title: 'Videography',
+      description: 'Cinematic captures crafted for modern brands and campaigns.',
+      icon: Clapperboard,
+      accent: 'from-[#d4af37]/45 via-[#d4af37]/10 to-transparent',
+      border: 'border-gold/25',
+    },
+    {
+      title: 'Photography',
+      description: 'Editorial-grade photos for products, teams, and experiences.',
+      icon: Camera,
+      accent: 'from-white/35 via-white/10 to-transparent',
+      border: 'border-paper/20',
+    },
+    {
+      title: 'Graphic Design',
+      description: 'Distinct visual systems that elevate every touchpoint.',
+      icon: PenTool,
+      accent: 'from-[#8f887f]/45 via-[#8f887f]/12 to-transparent',
+      border: 'border-[#8f887f]/30',
+    },
+    {
+      title: 'Event Support / Creative Production',
+      description: 'On-ground coordination and premium creative delivery.',
+      icon: CalendarRange,
+      accent: 'from-[#e5c76b]/40 via-[#e5c76b]/12 to-transparent',
+      border: 'border-[#e5c76b]/28',
+    },
+  ],
+  ar: [
+    {
+      title: 'تصوير الفيديو',
+      description: 'لقطات سينمائية مصممة للعلامات الحديثة والحملات النوعية.',
+      icon: Clapperboard,
+      accent: 'from-[#d4af37]/45 via-[#d4af37]/10 to-transparent',
+      border: 'border-gold/25',
+    },
+    {
+      title: 'التصوير الفوتوغرافي',
+      description: 'صور احترافية للمنتجات والفرق والتجارب.',
+      icon: Camera,
+      accent: 'from-white/35 via-white/10 to-transparent',
+      border: 'border-paper/20',
+    },
+    {
+      title: 'التصميم الجرافيكي',
+      description: 'هوية بصرية متكاملة ترفع جودة كل نقطة تواصل.',
+      icon: PenTool,
+      accent: 'from-[#8f887f]/45 via-[#8f887f]/12 to-transparent',
+      border: 'border-[#8f887f]/30',
+    },
+    {
+      title: 'دعم الفعاليات / الإنتاج الإبداعي',
+      description: 'تنسيق ميداني وتنفيذ إبداعي راقٍ من البداية للنهاية.',
+      icon: CalendarRange,
+      accent: 'from-[#e5c76b]/40 via-[#e5c76b]/12 to-transparent',
+      border: 'border-[#e5c76b]/28',
+    },
+  ],
+};
 
 export default function LandingPage() {
-  const { copy, isArabic } = useLanguage();
+  const { copy, isArabic, language } = useLanguage();
+  const reduceMotion = useReducedMotion();
+  const [isDesktop, setIsDesktop] = useState(false);
+  const [step, setStep] = useState(0);
+
+  useEffect(() => {
+    const media = window.matchMedia('(min-width: 1024px)');
+    const onChange = () => setIsDesktop(media.matches);
+    onChange();
+    media.addEventListener('change', onChange);
+    return () => media.removeEventListener('change', onChange);
+  }, []);
+
+  const services = SERVICE_ITEMS[language];
+  const serviceFocusIndex = Math.min(services.length - 1, Math.max(0, step - 2));
+  const showServiceFocus = step >= 2 && step <= 5;
+  const showServiceGrid = step === 6;
+
+  const activeChapter =
+    step <= 0
+      ? 0
+      : step === 1
+        ? 1
+        : step <= 6
+          ? 2
+          : step === 7
+            ? 3
+            : 4;
+
+  const chapterNav = [
+    { key: 'hero', label: isArabic ? 'المقدمة' : 'Intro', at: 0, path: '/' },
+    { key: 'why', label: isArabic ? 'لماذا' : 'Why', at: 1, path: '/about' },
+    { key: 'services', label: isArabic ? 'الخدمات' : 'Services', at: 2, path: '/vision' },
+    { key: 'methodology', label: isArabic ? 'المنهجية' : 'Method', at: 7, path: '/dashboard' },
+    { key: 'cta', label: isArabic ? 'الحجز' : 'Book', at: 8, path: '/book' },
+  ] as const;
+
+  const titleBase = 'text-[clamp(2.4rem,7vw,5.5rem)] font-serif leading-[0.9] tracking-[-0.03em]';
+
+  const goToStep = (next: number) => setStep(Math.max(0, Math.min(TOTAL_STEPS - 1, next)));
+  const nextStep = () => goToStep(step + 1);
+  const prevStep = () => goToStep(step - 1);
+
+  const chapters = useMemo(
+    () => [
+      {
+        key: 'hero',
+        title: 'Exordia',
+        subtitle: 'fresh minds… bigger impact',
+        description: copy.landing.description,
+        icon: Sparkles,
+      },
+      {
+        key: 'why',
+        title: isArabic ? 'لماذا Exordia' : 'Why Exordia',
+        subtitle: isArabic ? 'حل إبداعي أوضح. تنفيذ أسرع. أثر أقوى.' : 'Clearer creative starts. Faster execution. Stronger outcomes.',
+        description:
+          isArabic
+            ? 'نجمع المواهب الشابة مع احتياجك التجاري في تجربة احترافية سهلة، لتبدأ بثقة وتصل لنتيجة ملموسة.'
+            : 'We pair fresh creative minds with business-ready execution so you can move from brief to impact with confidence.',
+        icon: Target,
+      },
+      {
+        key: 'services',
+        title: copy.landing.explore,
+        subtitle: isArabic ? 'خدمات مصممة للتأثير' : 'Services designed for impact',
+        description: isArabic
+          ? 'اضغط داخل الإطار للتنقّل بين الخدمات واحدة تلو الأخرى.'
+          : 'Click inside the frame to move through each service one-by-one.',
+        icon: Layers3,
+      },
+      {
+        key: 'methodology',
+        title: copy.landing.methodology,
+        subtitle: isArabic ? 'منهج واضح من الفكرة إلى التنفيذ' : 'A structured flow from brief to delivery',
+        description: isArabic
+          ? 'نبدأ برؤية واضحة، نطابقك مع الفريق المناسب، ننفّذ بدقة، ونقيس الأثر.'
+          : 'We align on your goal, match the right creative team, execute with precision, then optimize for measurable impact.',
+        icon: CheckCircle2,
+      },
+      {
+        key: 'cta',
+        title: 'Exordia',
+        subtitle: 'fresh minds… bigger impact',
+        description: copy.landing.finalDescription,
+        icon: Sparkles,
+      },
+    ],
+    [copy.landing.description, copy.landing.explore, copy.landing.finalDescription, copy.landing.methodology, isArabic],
+  );
+
+  if (!isDesktop) {
+    return (
+      <div className="bg-paper text-ink px-4 py-20 sm:px-6">
+        <div className="mx-auto max-w-3xl space-y-6">
+          {chapters.map((chapter, index) => {
+            const Icon = chapter.icon;
+            return (
+              <section
+                key={chapter.key}
+                className="rounded-[2rem] border border-ink/10 bg-white p-6 shadow-[0_18px_45px_rgba(10,10,10,0.08)]"
+              >
+                <div className={cn('mb-5 flex items-center gap-3 text-gold', isArabic && 'flex-row-reverse')}>
+                  <Icon className="h-5 w-5" />
+                  <span className="text-[10px] uppercase tracking-[0.32em]">0{index + 1}</span>
+                </div>
+                <h2 className={cn('text-4xl font-serif leading-tight', isArabic && 'text-right')}>{chapter.title}</h2>
+                <p className={cn('mt-3 text-base text-ink/75', isArabic && 'text-right')}>{chapter.subtitle}</p>
+                <p className={cn('mt-4 text-sm leading-relaxed text-ink/62', isArabic && 'text-right')}>{chapter.description}</p>
+
+                {chapter.key === 'services' && (
+                  <div className="mt-6 grid gap-3">
+                    {services.map((service) => {
+                      const ServiceIcon = service.icon;
+                      return (
+                        <div key={service.title} className={cn('rounded-2xl border bg-paper p-4', service.border)}>
+                          <div className={cn('mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-ink/[0.04] text-gold')}>
+                            <ServiceIcon className="h-5 w-5" />
+                          </div>
+                          <h3 className="text-lg font-serif">{service.title}</h3>
+                          <p className="mt-2 text-sm text-ink/70">{service.description}</p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {chapter.key === 'cta' && (
+                  <MotionLink
+                    to="/book"
+                    className="mt-6 inline-flex items-center gap-2 rounded-full bg-gold px-6 py-3 text-xs font-bold uppercase tracking-[0.22em] text-ink"
+                    whileTap={reduceMotion ? undefined : { scale: 0.98 }}
+                  >
+                    {copy.nav.booking}
+                    <ArrowRight className={cn('h-4 w-4', isArabic && 'rotate-180')} />
+                  </MotionLink>
+                )}
+              </section>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="flex flex-col bg-paper">
-      <section className="relative min-h-[90vh] flex items-center py-24 lg:py-32 overflow-hidden">
-        <div className="absolute inset-0 opacity-20 pointer-events-none">
-          <div className="absolute top-0 left-1/4 w-[800px] h-[800px] bg-gold/10 rounded-full filter blur-[120px] -translate-x-1/2 -translate-y-1/2 animate-glow" />
-          <div
-            className="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-gold/5 rounded-full filter blur-[100px] translate-x-1/2 translate-y-1/2 animate-glow"
-            style={{ animationDelay: '2s' }}
-          />
-        </div>
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, ease: 'easeOut' }}
-              className={cn(isArabic && 'text-right')}
-            >
-              <div className={cn('flex items-center gap-4 mb-8', isArabic && 'flex-row-reverse')}>
-                <div className="h-px w-12 bg-gold" />
-                <span
-                  className={cn(
-                    'text-[11px] font-bold text-gold',
-                    isArabic ? 'tracking-[0.18em]' : 'uppercase tracking-[0.4em]',
-                  )}
-                >
-                  {copy.landing.eyebrow}
-                </span>
-              </div>
-
-              <h1 className="text-6xl md:text-8xl font-serif text-ink leading-[0.9] mb-10 text-balance">
-                {copy.landing.titleLineOne} <br />
-                <span className="italic text-gold">{copy.landing.titleAccent}</span>
-              </h1>
-
-              <p className="text-xl text-ink/60 mb-12 max-w-lg leading-relaxed font-serif italic">
-                {copy.landing.description}
-              </p>
-
-              <div className={cn('flex flex-col sm:flex-row gap-8 items-center', isArabic && 'sm:flex-row-reverse')}>
-                <Link
-                  to="/book"
-                  className="group relative bg-ink text-paper px-12 py-6 rounded-full font-bold text-sm uppercase tracking-widest-xl hover:bg-gold hover:text-ink transition-all duration-500 shadow-2xl shadow-ink/10 overflow-hidden"
-                >
-                  <span className={cn('relative z-10 flex items-center gap-3', isArabic && 'flex-row-reverse')}>
-                    {copy.landing.primaryCta}
-                    <ArrowRight className={cn('w-5 h-5 transition-transform', isArabic ? 'rotate-180 group-hover:-translate-x-2' : 'group-hover:translate-x-2')} />
-                  </span>
-                </Link>
-                <Link
-                  to="/dashboard"
-                  className={cn(
-                    'text-[11px] font-bold text-ink border-b-2 border-gold pb-2 hover:text-gold transition-colors',
-                    isArabic ? 'tracking-[0.15em]' : 'uppercase tracking-widest-xl',
-                  )}
-                >
-                  {copy.landing.secondaryCta}
-                </Link>
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 1, delay: 0.2 }}
-              className="relative hidden lg:block"
-            >
-              <div className="aspect-[4/5] relative rounded-[4rem] overflow-hidden shadow-2xl rotate-2 group hover:rotate-0 transition-transform duration-700 animate-float">
-                <img
-                  src={heroImage}
-                  alt="Exordia Team"
-                  className="absolute inset-0 w-full h-full object-cover object-[24%_center] scale-[1.62] group-hover:scale-[1.52] transition-transform duration-1000"
-                  referrerPolicy="no-referrer"
-                />
-                <div className="absolute inset-0 bg-ink/20" />
-              </div>
-            </motion.div>
+    <section className="relative min-h-screen bg-paper px-4 pb-10 pt-28 text-ink sm:px-8" onClick={nextStep}>
+      <div className="mx-auto w-full max-w-6xl">
+        <div className="relative z-10 flex h-[82vh] w-full flex-col overflow-hidden rounded-[2.7rem] border border-ink/10 bg-white/95 p-8 shadow-[0_30px_90px_rgba(10,10,10,0.12)] lg:p-12">
+          <div className="mb-4 flex items-center justify-between text-[10px] uppercase tracking-[0.32em] text-ink/58">
+            <span>Exordia</span>
+            <span>{Math.round((step / (TOTAL_STEPS - 1)) * 100)}%</span>
           </div>
-        </div>
-      </section>
 
-      <section className="py-32 bg-ink text-paper relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-20">
-            {copy.landing.philosophy.map((item, idx) => {
-              const Icon = PHILOSOPHY_ICONS[idx];
+          <motion.div
+            initial={reduceMotion ? false : { opacity: 0, scale: 0.95 }}
+            animate={{ opacity: step <= 1 ? 1 : 0, scale: step <= 1 ? 1 : 0.9 }}
+            transition={{ duration: 0.35 }}
+            className={cn(
+              'pointer-events-none absolute top-12 z-20 h-44 w-72 overflow-hidden rounded-2xl border border-ink/10 bg-paper shadow-[0_12px_25px_rgba(0,0,0,0.08)]',
+              isArabic ? 'left-16' : 'right-16',
+            )}
+          >
+            <img src={heroImage} alt="Exordia hero boys" className="h-full w-full scale-[1.48] object-cover object-[10%_22%]" />
+          </motion.div>
 
+          <div className={cn('mb-4 flex flex-wrap items-center gap-2', isArabic && 'justify-end')} onClick={(e) => e.stopPropagation()}>
+            {chapterNav.map((chapter, index) => {
+              const isActive = activeChapter === index;
               return (
-                <div key={item.title} className={cn('group', isArabic && 'text-right')}>
-                  <div className={cn('w-16 h-16 bg-paper/5 rounded-2xl flex items-center justify-center mb-8 group-hover:bg-gold transition-colors duration-500', isArabic && 'mr-auto')}>
-                    <Icon className="text-gold group-hover:text-ink w-8 h-8 transition-colors duration-500" />
-                  </div>
-                  <h3 className="text-2xl font-serif mb-4">{item.title}</h3>
-                  <p className="text-paper/60 text-sm leading-relaxed font-light">{item.desc}</p>
-                </div>
+                <Link
+                  key={chapter.key}
+                  to={chapter.path}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    goToStep(chapter.at);
+                  }}
+                  className={cn(
+                    'rounded-full border px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.2em] transition-colors',
+                    isActive ? 'border-gold bg-gold/12 text-ink' : 'border-ink/15 bg-white text-ink/65 hover:border-gold/40 hover:text-ink',
+                  )}
+                >
+                  {chapter.label}
+                </Link>
               );
             })}
           </div>
-        </div>
 
-        <div className="absolute bottom-0 left-0 text-[20vw] font-serif text-paper/5 leading-none -translate-x-10 translate-y-1/2 pointer-events-none select-none italic">
-          {isArabic ? 'أثر' : 'Prestige'}
-        </div>
-      </section>
-
-      <section className="py-32 bg-paper">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className={cn('flex flex-col md:flex-row justify-between items-end mb-24 gap-8', isArabic && 'md:flex-row-reverse md:items-start')}>
-            <div className={cn('max-w-2xl', isArabic && 'text-right')}>
-              <span
-                className={cn(
-                  'text-[11px] font-bold text-gold mb-6 block',
-                  isArabic ? 'tracking-[0.18em]' : 'uppercase tracking-[0.4em]',
-                )}
+          <div className="relative flex-1 overflow-hidden">
+            <AnimatePresence mode="wait">
+              <motion.article
+                key={`step-${step}`}
+                initial={reduceMotion ? false : { opacity: 0, y: 22, scale: 0.97 }}
+                animate={reduceMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
+                exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -16, scale: 0.98 }}
+                transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                className="absolute inset-0"
               >
-                {copy.landing.methodology}
-              </span>
-              <h2 className="text-5xl md:text-7xl font-serif text-ink leading-tight">
-                {copy.landing.methodologyTitle} <br />
-                <span className="italic">{copy.landing.methodologyAccent}</span>
-              </h2>
-            </div>
-            <Link
-              to="/book"
-              className={cn(
-                'text-[11px] font-bold text-ink border-b-2 border-gold pb-2 hover:text-gold transition-colors',
-                isArabic ? 'tracking-[0.15em]' : 'uppercase tracking-widest-xl',
-              )}
-            >
-              {copy.landing.explore}
-            </Link>
+                {activeChapter !== 2 && (
+                  <div className={cn('flex h-full flex-col justify-between', isArabic && 'text-right')}>
+                    <div>
+                      <p className={cn('mb-3 text-[10px] font-bold text-gold', isArabic ? 'tracking-[0.14em]' : 'tracking-[0.28em] uppercase')}>
+                        {activeChapter === 1
+                          ? '02 / WHY EXORDIA'
+                          : activeChapter === 3
+                            ? '04 / THE METHODOLOGY'
+                            : activeChapter === 4
+                              ? '05 / START BOOKING'
+                              : '01 / EXORDIA'}
+                      </p>
+                      <h1 className={titleBase}>{chapters[activeChapter].title}</h1>
+                      <p className="mt-3 text-2xl font-serif italic text-gold">{chapters[activeChapter].subtitle}</p>
+                      <p className="mt-4 max-w-2xl text-base leading-relaxed text-ink/64">{chapters[activeChapter].description}</p>
+                    </div>
+
+                    {activeChapter === 3 && (
+                      <div className="grid grid-cols-4 gap-3 pt-6">
+                        {copy.landing.process.map((item) => (
+                          <div key={item.step} className="rounded-2xl border border-ink/10 bg-paper p-4">
+                            <p className="text-[10px] uppercase tracking-[0.24em] text-gold">{item.step}</p>
+                            <h3 className="mt-2 text-lg font-serif">{item.title}</h3>
+                            <p className="mt-2 text-xs text-ink/66">{item.desc}</p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {activeChapter === 4 && (
+                      <div className={cn('pt-8', isArabic && 'flex justify-end')} onClick={(e) => e.stopPropagation()}>
+                        <MotionLink
+                          to="/book"
+                          className="group inline-flex items-center justify-center gap-3 rounded-full bg-gold px-10 py-4 text-[11px] font-bold uppercase tracking-[0.28em] text-ink shadow-[0_24px_80px_rgba(212,175,55,0.24)]"
+                          whileHover={reduceMotion ? undefined : { y: -3, scale: 1.01 }}
+                          whileTap={reduceMotion ? undefined : { scale: 0.985 }}
+                        >
+                          {copy.nav.booking}
+                          <ArrowRight className={cn('h-4 w-4 transition-transform', isArabic ? 'rotate-180 group-hover:-translate-x-1.5' : 'group-hover:translate-x-1.5')} />
+                        </MotionLink>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {activeChapter === 2 && (
+                  <div className={cn('flex h-full flex-col', isArabic && 'text-right')}>
+                    <p className={cn('mb-3 text-[10px] font-bold text-gold', isArabic ? 'tracking-[0.14em]' : 'tracking-[0.3em] uppercase')}>
+                      03 / SERVICES
+                    </p>
+                    <h2 className="text-4xl font-serif">{chapters[2].subtitle}</h2>
+                    <p className="mt-2 max-w-2xl text-sm text-ink/66">{chapters[2].description}</p>
+
+                    <div className="relative mt-6 flex-1 overflow-hidden rounded-[1.9rem] border border-ink/10 bg-paper p-6">
+                      <AnimatePresence mode="wait">
+                        {showServiceFocus && (
+                          <motion.div
+                            key={services[serviceFocusIndex].title}
+                            initial={reduceMotion ? false : { opacity: 0, scale: 0.86 }}
+                            animate={reduceMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }}
+                            exit={reduceMotion ? { opacity: 0 } : { opacity: 0, scale: 1.06 }}
+                            transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
+                            className="h-full"
+                          >
+                            {(() => {
+                              const featured = services[serviceFocusIndex];
+                              const Icon = featured.icon;
+                              return (
+                                <div className={cn('relative flex h-full flex-col justify-end overflow-hidden rounded-[1.5rem] border p-8 shadow-[0_20px_60px_rgba(0,0,0,0.16)]', featured.border)}>
+                                  <div className={cn('absolute inset-x-0 top-0 h-44 bg-gradient-to-b', featured.accent)} />
+                                  <div className="relative z-10">
+                                    <div className="mb-6 inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-ink/10 bg-paper/70 text-gold">
+                                      <Icon className="h-5 w-5" />
+                                    </div>
+                                    <h3 className="text-4xl font-serif">{featured.title}</h3>
+                                    <p className="mt-3 max-w-xl text-base text-ink/66">{featured.description}</p>
+                                  </div>
+                                </div>
+                              );
+                            })()}
+                          </motion.div>
+                        )}
+
+                        {showServiceGrid && (
+                          <motion.div
+                            key="services-grid"
+                            initial={reduceMotion ? false : { opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.4 }}
+                            className="grid h-full grid-cols-2 gap-3"
+                          >
+                            {services.map((service, index) => {
+                              const Icon = service.icon;
+                              return (
+                                <motion.div
+                                  key={service.title}
+                                  initial={reduceMotion ? false : { opacity: 0, y: 14 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  transition={{ delay: index * 0.05, duration: 0.3 }}
+                                  className={cn('relative overflow-hidden rounded-2xl border p-3 min-h-[130px]', service.border)}
+                                >
+                                  <div className={cn('absolute inset-x-0 top-0 h-16 bg-gradient-to-b', service.accent)} />
+                                  <div className="relative z-10 flex h-full flex-col">
+                                    <div className="mb-2 inline-flex h-9 w-9 items-center justify-center rounded-xl border border-ink/10 bg-paper/70 text-gold">
+                                      <Icon className="h-3.5 w-3.5" />
+                                    </div>
+                                    <h3 className="text-lg font-serif leading-tight">{service.title}</h3>
+                                  </div>
+                                </motion.div>
+                              );
+                            })}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  </div>
+                )}
+              </motion.article>
+            </AnimatePresence>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
-            {copy.landing.process.map((item) => (
-              <div key={item.step} className={cn('relative group', isArabic && 'text-right')}>
-                <span
-                  className={cn(
-                    'text-8xl font-serif text-ink/5 absolute -top-12 -left-4 z-0 transition-colors group-hover:text-gold/10',
-                    isArabic && '-left-auto -right-4',
-                  )}
-                >
-                  {item.step}
-                </span>
-                <div className="relative z-10 pt-8 border-t border-ink/10">
-                  <h3 className="text-xl font-serif text-ink mb-4">{item.title}</h3>
-                  <p className="text-ink/50 text-sm leading-relaxed font-light">{item.desc}</p>
-                </div>
-              </div>
-            ))}
+          <div className="mt-6 flex items-center justify-between" onClick={(e) => e.stopPropagation()}>
+            <button
+              type="button"
+              onClick={prevStep}
+              disabled={step === 0}
+              className="rounded-full border border-ink/15 px-4 py-2 text-[11px] uppercase tracking-[0.18em] text-ink/65 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              {isArabic ? 'السابق' : 'Back'}
+            </button>
+            <p className="text-[10px] uppercase tracking-[0.26em] text-ink/45">{isArabic ? 'اضغط على الإطار للمتابعة' : 'Click frame to continue'}</p>
+            <button
+              type="button"
+              onClick={nextStep}
+              disabled={step === TOTAL_STEPS - 1}
+              className="rounded-full border border-ink/15 px-4 py-2 text-[11px] uppercase tracking-[0.18em] text-ink/65 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              {isArabic ? 'التالي' : 'Next'}
+            </button>
+          </div>
+
+          <div className="mt-4 h-1 rounded-full bg-ink/10">
+            <motion.div className="h-full rounded-full bg-gold" style={{ width: `${Math.round((step / (TOTAL_STEPS - 1)) * 100)}%` }} />
           </div>
         </div>
-      </section>
-
-      <section className="py-32 bg-paper relative overflow-hidden">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="bg-ink rounded-[4rem] py-24 px-8 relative overflow-hidden shadow-2xl">
-            <div className="absolute top-0 right-0 w-96 h-96 bg-gold/10 rounded-full filter blur-[100px] translate-x-1/2 -translate-y-1/2" />
-            <div className="absolute bottom-0 left-0 w-64 h-64 bg-gold/5 rounded-full filter blur-[80px] -translate-x-1/2 translate-y-1/2" />
-
-            <h2 className="text-5xl md:text-7xl font-serif text-paper mb-10 leading-tight relative z-10">
-              {copy.landing.finalTitle} <br />
-              <span className="italic text-gold">{copy.landing.finalAccent}</span>
-            </h2>
-            <p className="text-lg text-paper/60 mb-12 max-w-xl mx-auto font-light leading-relaxed relative z-10">
-              {copy.landing.finalDescription}
-            </p>
-            <Link
-              to="/book"
-              className="inline-block bg-gold text-ink px-16 py-6 rounded-full font-bold text-sm uppercase tracking-widest-xl hover:bg-paper transition-all duration-500 relative z-10 shadow-xl shadow-gold/20"
-            >
-              {copy.landing.finalCta}
-            </Link>
-          </div>
-        </div>
-      </section>
-    </div>
+      </div>
+    </section>
   );
 }
