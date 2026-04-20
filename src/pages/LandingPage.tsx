@@ -249,10 +249,7 @@ export default function LandingPage() {
             initial={reduceMotion ? false : { opacity: 0, scale: 0.95 }}
             animate={{ opacity: step <= 1 ? 1 : 0, scale: step <= 1 ? 1 : 0.9 }}
             transition={{ duration: 0.35 }}
-            className={cn(
-              'pointer-events-none absolute top-12 z-20 h-44 w-72 overflow-hidden rounded-2xl border border-ink/10 bg-paper shadow-[0_12px_25px_rgba(0,0,0,0.08)]',
-              isArabic ? 'left-16' : 'right-16',
-            )}
+            className="pointer-events-none absolute right-16 top-12 z-20 h-44 w-72 overflow-hidden rounded-2xl border border-ink/10 bg-paper shadow-[0_12px_25px_rgba(0,0,0,0.08)]"
           >
             <img src={heroImage} alt="Exordia hero boys" className="h-full w-full scale-[1.48] object-cover object-[10%_22%]" />
           </motion.div>
@@ -389,14 +386,14 @@ export default function LandingPage() {
                                   initial={reduceMotion ? false : { opacity: 0, y: 14 }}
                                   animate={{ opacity: 1, y: 0 }}
                                   transition={{ delay: index * 0.05, duration: 0.3 }}
-                                  className={cn('relative overflow-hidden rounded-2xl border p-3 min-h-[130px]', service.border)}
+                                  className={cn('relative overflow-hidden rounded-2xl border p-4 min-h-[180px]', service.border)}
                                 >
                                   <div className={cn('absolute inset-x-0 top-0 h-16 bg-gradient-to-b', service.accent)} />
                                   <div className="relative z-10 flex h-full flex-col">
-                                    <div className="mb-2 inline-flex h-9 w-9 items-center justify-center rounded-xl border border-ink/10 bg-paper/70 text-gold">
-                                      <Icon className="h-3.5 w-3.5" />
+                                    <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl border border-ink/10 bg-paper/70 text-gold">
+                                      <Icon className="h-4 w-4" />
                                     </div>
-                                    <h3 className="text-lg font-serif leading-tight">{service.title}</h3>
+                                    <h3 className="text-xl font-serif leading-tight">{service.title}</h3>
                                   </div>
                                 </motion.div>
                               );
