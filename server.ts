@@ -54,7 +54,7 @@ function isRateLimited(req: express.Request) {
 
 async function startServer() {
   const app = express();
-  const port = process.env.PORT || 3000;
+  const port = parseInt(process.env.PORT || "3000", 10);
 
   app.use(express.json({ limit: "300kb" }));
 
