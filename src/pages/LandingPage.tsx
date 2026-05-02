@@ -52,8 +52,8 @@ const SERVICE_ITEMS: Record<'en' | 'ar', ServiceItem[]> = {
       title: 'Photography',
       description: 'Editorial-grade photos for products, teams, and experiences.',
       icon: Camera,
-      accent: 'from-white/35 via-white/10 to-transparent',
-      border: 'border-paper/20',
+      accent: 'from-[#d4af37]/35 via-[#d4af37]/10 to-transparent',
+      border: 'border-gold/20',
     },
     {
       title: 'Graphic Design',
@@ -82,8 +82,8 @@ const SERVICE_ITEMS: Record<'en' | 'ar', ServiceItem[]> = {
       title: 'التصوير الفوتوغرافي',
       description: 'صور احترافية للمنتجات والفرق والتجارب.',
       icon: Camera,
-      accent: 'from-white/35 via-white/10 to-transparent',
-      border: 'border-paper/20',
+      accent: 'from-[#d4af37]/35 via-[#d4af37]/10 to-transparent',
+      border: 'border-gold/20',
     },
     {
       title: 'التصميم الجرافيكي',
@@ -199,13 +199,13 @@ export default function LandingPage() {
   const showServiceGrid = step === 6;
 
   return (
-    <div className="min-h-screen bg-ink text-paper selection:bg-gold/30">
+    <div className="min-h-screen bg-paper text-ink selection:bg-gold/30">
       <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-4 pt-40 pb-20 lg:py-0">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(212,175,55,0.15),_transparent_45%),linear-gradient(180deg,_rgba(245,242,237,0.02)_0%,_rgba(10,10,10,0)_30%,_rgba(10,10,10,0.95)_100%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(212,175,55,0.12),_transparent_50%),linear-gradient(180deg,_rgba(245,242,237,0.8)_0%,_rgba(245,242,237,0.4)_30%,_rgba(245,242,237,1)_100%)]" />
 
         <div className="relative z-10 w-full max-w-6xl">
           {/* Header Progress Indicator */}
-          <div className={cn("mb-6 flex items-center justify-between px-2 text-[10px] font-bold uppercase tracking-[0.4em] text-paper/40", isArabic && "flex-row-reverse")}>
+          <div className={cn("mb-6 flex items-center justify-between px-2 text-[10px] font-bold uppercase tracking-[0.4em] text-ink/40", isArabic && "flex-row-reverse")}>
             <div className={cn("flex items-center gap-3", isArabic && "flex-row-reverse")}>
               <div className="h-px w-8 bg-gold/50" />
               <span>{isArabic ? 'إيكسورديا' : 'Exordia'}</span>
@@ -214,7 +214,7 @@ export default function LandingPage() {
           </div>
 
           <motion.div
-            className="group relative aspect-[4/5] w-full overflow-hidden rounded-[2.5rem] border border-paper/10 bg-ink/40 shadow-[0_40px_120px_rgba(0,0,0,0.5)] backdrop-blur-sm sm:aspect-square lg:aspect-video lg:h-[70vh] touch-none"
+            className="group relative aspect-[4/5] w-full overflow-hidden rounded-[2.5rem] border border-ink/10 bg-white/40 shadow-[0_40px_120px_rgba(0,0,0,0.08)] backdrop-blur-sm sm:aspect-square lg:aspect-video lg:h-[70vh] touch-none"
             drag="x"
             dragConstraints={{ left: 0, right: 0 }}
             dragElastic={0.2}
@@ -231,50 +231,57 @@ export default function LandingPage() {
                 className="absolute inset-0"
               >
                 {activeChapter === 0 && (
-                  <div className="absolute inset-0">
+                  <div className="absolute inset-0 overflow-hidden">
                     <motion.img
-                      initial={{ scale: 1.1, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 0.4 }}
+                      initial={{ scale: 2.4, opacity: 0 }}
+                      animate={{ scale: 2.2, opacity: 1 }}
                       transition={{ duration: 1.5 }}
                       src={heroImage}
                       alt="Exordia"
-                      className="h-full w-full object-cover grayscale"
+                      className="h-full w-full object-cover object-[65%_25%]"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/20 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-paper via-paper/10 to-transparent" />
                   </div>
                 )}
 
-                <div className="relative h-full w-full p-8 lg:p-16">
-                  <div className="flex h-full flex-col justify-end lg:justify-center">
+                <div className="relative h-full w-full p-6 sm:p-8 lg:p-16">
+                  <div className={cn(
+                    "flex h-full flex-col lg:justify-center",
+                    activeChapter === 0 ? "justify-end pb-12" : "justify-center"
+                  )}>
                     <motion.div
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.2, duration: 0.8 }}
-                      className={cn("max-w-2xl", isArabic && "text-right ml-auto")}
+                      className={cn(
+                        "max-w-2xl",
+                        isArabic && "text-right ml-auto",
+                        activeChapter === 0 && "bg-white/20 backdrop-blur-md p-6 sm:p-8 rounded-[2rem] border border-white/30 shadow-xl"
+                      )}
                     >
-                      <div className={cn("mb-6 flex items-center gap-3", isArabic && "flex-row-reverse")}>
+                      <div className={cn("mb-4 sm:mb-6 flex items-center gap-3", isArabic && "flex-row-reverse")}>
                         <div className="h-px w-10 bg-gold" />
                         <span className="text-[11px] font-bold uppercase tracking-[0.3em] text-gold">
                           0{activeChapter + 1} / 05
                         </span>
                       </div>
 
-                      <h1 className="font-serif text-4xl sm:text-7xl lg:text-8xl leading-[0.9] text-paper">
+                      <h1 className="font-serif text-4xl sm:text-6xl lg:text-8xl leading-[0.9] text-ink">
                         {chapters[activeChapter].title}
                         {chapters[activeChapter].key === 'hero' && (
-                          <span className="block mt-2 text-2xl sm:text-4xl lg:text-5xl italic text-gold">
+                          <span className="block mt-2 text-2xl sm:text-3xl lg:text-5xl italic text-gold drop-shadow-sm">
                             {chapters[activeChapter].subtitle}
                           </span>
                         )}
                       </h1>
 
                       {chapters[activeChapter].key !== 'hero' && (
-                        <h2 className="mt-4 font-serif text-xl sm:text-3xl lg:text-4xl italic text-gold">
+                        <h2 className="mt-2 sm:mt-4 font-serif text-xl sm:text-3xl lg:text-4xl italic text-gold">
                           {chapters[activeChapter].subtitle}
                         </h2>
                       )}
 
-                      <p className="mt-4 sm:mt-8 text-base sm:text-xl font-light leading-relaxed text-paper/70 lg:max-w-xl">
+                      <p className="mt-4 sm:mt-8 text-base sm:text-xl font-light leading-relaxed text-ink/70 lg:max-w-xl">
                         {chapters[activeChapter].description}
                       </p>
 
@@ -286,16 +293,20 @@ export default function LandingPage() {
                               key={services[serviceFocusIndex].title}
                               initial={{ opacity: 0, scale: 0.95 }}
                               animate={{ opacity: 1, scale: 1 }}
-                              className={cn("max-w-md rounded-3xl border border-paper/10 bg-paper/5 p-6 backdrop-blur-md", services[serviceFocusIndex].border, isArabic && "ml-auto")}
+                              className={cn(
+                                "max-w-md rounded-3xl border border-ink/10 bg-white/60 p-6 shadow-sm backdrop-blur-md",
+                                services[serviceFocusIndex].border,
+                                isArabic && "ml-auto"
+                              )}
                             >
                               {(() => {
                                 const s = services[serviceFocusIndex];
                                 const Icon = s.icon;
                                 return (
                                   <>
-                                    <Icon className={cn("h-6 w-6 text-gold mb-4", isArabic && "ml-auto")} />
-                                    <h3 className="text-xl font-serif mb-2">{s.title}</h3>
-                                    <p className="text-sm text-paper/60">{s.description}</p>
+                                    <Icon className={cn("h-8 w-8 text-gold mb-4", isArabic && "ml-auto")} />
+                                    <h3 className="text-2xl font-serif mb-2">{s.title}</h3>
+                                    <p className="text-base text-ink/60 leading-relaxed">{s.description}</p>
                                   </>
                                 );
                               })()}
@@ -310,9 +321,9 @@ export default function LandingPage() {
                               className="grid grid-cols-2 lg:grid-cols-4 gap-3"
                             >
                               {services.map(s => (
-                                <div key={s.title} className={cn("rounded-2xl border border-paper/10 bg-paper/5 p-4", s.border)}>
-                                  <s.icon className={cn("h-5 w-5 text-gold mb-3", isArabic && "ml-auto")} />
-                                  <h4 className="text-sm font-serif">{s.title}</h4>
+                                <div key={s.title} className={cn("rounded-2xl border border-ink/10 bg-white/60 p-4 shadow-sm", s.border)}>
+                                  <s.icon className={cn("h-6 w-6 text-gold mb-3", isArabic && "ml-auto")} />
+                                  <h4 className="text-sm font-serif text-ink">{s.title}</h4>
                                 </div>
                               ))}
                             </motion.div>
@@ -324,9 +335,9 @@ export default function LandingPage() {
                       {activeChapter === 3 && (
                         <div className="mt-6 sm:mt-10 grid grid-cols-2 lg:grid-cols-4 gap-3">
                           {copy.landing.process.map((item) => (
-                            <div key={item.step} className="rounded-2xl border border-paper/10 bg-paper/5 p-4">
-                              <span className="text-[10px] font-bold uppercase tracking-widest text-gold/60">{item.step}</span>
-                              <h4 className="text-sm font-serif mt-1">{item.title}</h4>
+                            <div key={item.step} className="rounded-2xl border border-ink/10 bg-white/60 p-4 shadow-sm">
+                              <span className="text-[10px] font-bold uppercase tracking-widest text-gold">{item.step}</span>
+                              <h4 className="text-sm font-serif mt-1 text-ink">{item.title}</h4>
                             </div>
                           ))}
                         </div>
@@ -363,14 +374,14 @@ export default function LandingPage() {
           {/* Mobile & Tablet Navigation Controls */}
           <div className={cn("mt-8 flex items-center justify-between gap-6 lg:hidden", isArabic && "flex-row-reverse")}>
             <button
-              onClick={(e) => { e.stopPropagation(); isArabic ? nextStep() : prevStep(); }}
-              disabled={isArabic ? step === TOTAL_STEPS - 1 : step === 0}
-              className="flex h-16 w-16 items-center justify-center rounded-full border border-paper/10 bg-paper/5 text-paper/60 backdrop-blur-xl transition-all active:scale-95 disabled:opacity-20"
+              onClick={(e) => { e.stopPropagation(); prevStep(); }}
+              disabled={step === 0}
+              className="flex h-16 w-16 items-center justify-center rounded-full border border-ink/10 bg-white/80 text-ink/60 backdrop-blur-xl transition-all active:scale-95 disabled:opacity-20 shadow-sm"
             >
               <ArrowRight className={cn("h-6 w-6", isArabic ? "" : "rotate-180")} />
             </button>
 
-            <div className="flex-1 h-px bg-paper/10">
+            <div className="flex-1 h-px bg-ink/10">
               <motion.div
                 className="h-full bg-gold"
                 initial={false}
@@ -379,10 +390,10 @@ export default function LandingPage() {
             </div>
 
             <button
-              onClick={(e) => { e.stopPropagation(); isArabic ? prevStep() : nextStep(); }}
-              disabled={isArabic ? step === 0 : step === TOTAL_STEPS - 1}
+              onClick={(e) => { e.stopPropagation(); nextStep(); }}
+              disabled={step === TOTAL_STEPS - 1}
               aria-label="Next step"
-              className="flex h-16 w-16 items-center justify-center rounded-full bg-gold text-ink transition-all active:scale-95 disabled:opacity-20"
+              className="flex h-16 w-16 items-center justify-center rounded-full bg-gold text-ink transition-all active:scale-95 disabled:opacity-20 shadow-md"
             >
               <ArrowRight className={cn("h-6 w-6", isArabic ? "rotate-180" : "")} />
             </button>
@@ -396,7 +407,7 @@ export default function LandingPage() {
                 onClick={(e) => { e.stopPropagation(); goToStep(idx === 0 ? 0 : idx === 1 ? 1 : idx === 2 ? 2 : idx === 3 ? 7 : 8); }}
                 className={cn(
                   "relative text-[10px] font-bold uppercase tracking-[0.3em] transition-colors",
-                  activeChapter === idx ? "text-gold" : "text-paper/30 hover:text-paper/60"
+                  activeChapter === idx ? "text-gold" : "text-ink/30 hover:text-ink/60"
                 )}
               >
                 {ch.title}
@@ -413,7 +424,7 @@ export default function LandingPage() {
       </section>
 
       {/* Philosophy Section */}
-      <section className="bg-ink py-32 px-4">
+      <section className="bg-paper/50 py-32 px-4 border-t border-ink/5">
         <div className="mx-auto max-w-7xl">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {copy.landing.philosophy.map((item, i) => {
@@ -421,42 +432,17 @@ export default function LandingPage() {
               return (
                 <div key={item.title}>
                   <Reveal delay={i * 0.1}>
-                    <div className={cn("group rounded-[2.5rem] border border-paper/10 bg-white/[0.03] p-10 backdrop-blur-sm transition-all hover:border-gold/30", isArabic && "text-right")}>
+                    <div className={cn("group rounded-[2.5rem] border border-ink/10 bg-white/60 p-10 backdrop-blur-sm transition-all hover:border-gold/30 hover:shadow-xl", isArabic && "text-right")}>
                       <div className={cn("mb-8 flex h-14 w-14 items-center justify-center rounded-2xl bg-gold/10 text-gold group-hover:scale-110 transition-transform", isArabic && "ml-auto")}>
                         <Icon className="h-6 w-6" />
                       </div>
-                      <h3 className="text-2xl font-serif mb-4 text-paper">{item.title}</h3>
-                      <p className="text-paper/50 leading-relaxed">{item.desc}</p>
+                      <h3 className="text-2xl font-serif mb-4 text-ink">{item.title}</h3>
+                      <p className="text-ink/50 leading-relaxed">{item.desc}</p>
                     </div>
                   </Reveal>
                 </div>
               );
             })}
-          </div>
-        </div>
-      </section>
-
-      {/* Methodology Detailed Section */}
-      <section className="bg-paper py-32 px-4">
-        <div className="mx-auto max-w-7xl">
-          <div className={cn("mb-16", isArabic && "text-right")}>
-            <Reveal>
-              <span className="text-gold font-bold uppercase tracking-widest text-sm">{copy.landing.methodology}</span>
-              <h2 className="text-ink text-4xl sm:text-6xl font-serif mt-4">{copy.landing.methodologyTitle} <span className="italic text-gold">{copy.landing.methodologyAccent}</span></h2>
-            </Reveal>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {copy.landing.process.map((item, i) => (
-              <div key={item.step}>
-                <Reveal delay={i * 0.1}>
-                  <div className={cn("p-8 rounded-3xl border border-ink/5 bg-ink/[0.02]", isArabic && "text-right")}>
-                    <span className="text-gold font-bold text-lg">{item.step}</span>
-                    <h3 className="text-ink text-2xl font-serif mt-4 mb-2">{item.title}</h3>
-                    <p className="text-ink/60">{item.desc}</p>
-                  </div>
-                </Reveal>
-              </div>
-            ))}
           </div>
         </div>
       </section>
